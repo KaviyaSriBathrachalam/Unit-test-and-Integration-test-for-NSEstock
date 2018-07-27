@@ -1,4 +1,4 @@
-#INTEGRATION TEST for CONTROLLER
+#INTEGRATION REAL OBJECTS TEST for CONTROLLER
 
 
 package com.kgisl.docket.controller;

@@ -1,0 +1,43 @@
+sudo: required
+language: java
+jdk: oraclejdk8
+services:
+  - docker
+
+addons:
+  sonarcloud:
+    organization: "baraneetharan-github"
+    token:
+      secure: 5440b0e65f5d7649a722d23996224976f5b68c46
+
+before_install:
+  - chmod +x mvnw
+# script: "mvn test && mvn verify && mvn package sonar:sonar"
+
+script:
+- ./mvnw clean install -B
+- ./mvnw clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.sonar/cache'
+
+notifications:
+    slack: docket-workspace:wLFGj3Bp0Wdsb5qw82bYuqoO
+
+after_success:
+  - docker login -u baraneetharan -p Baranee@123
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+  - export REPO=baraneetharan / docket 
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO    
+
+deploy:
+  provider: heroku
+  api_key: e091f2d5-df18-489b-8da6-db8735cd8df8
+  # app: docket-docker
